@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import xlrd
@@ -27,12 +27,36 @@ def excel2xml(filename):
             for i in firstline:
                 line += (i + '="%s" ')
             line += '/>'
-
             for i in xrange(1, sh.nrows):
                 args = tuple([toString(x) for x in sh.row_values(i)])
                 outputstr = line % args
                 output.write(outputstr.encode('utf-8') + "\n")
             outputstr = '</%s>' % (sh.name)
+            output.write(outputstr.encode('utf-8'))
+            output.close();
+    except:
+        print 'file format error...'
+        sys.exit()
+
+def excel2php(filename):
+    try:
+        bk = xlrd.open_workbook(filename)
+        for sh in bk.sheets():
+            print 'creating %s.php' % sh.name
+            output = open(sh.name + '.php', 'w')
+            output.write("<?php\n")
+            firstline = sh.row_values(0)
+            outputstr = 'return array('
+            output.write(outputstr.encode('utf-8') + "\n")
+            line = 'array('
+            for i in firstline:
+                line += ('"' + i + '"' + ' => "%s", ')
+            line += '),'
+            for i in xrange(1, sh.nrows):
+                args = tuple([toString(x) for x in sh.row_values(i)])
+                outputstr = '"' + args[0] + '" => ' + line % args
+                output.write(outputstr.encode('utf-8') + "\n")
+            outputstr = ")\n?>"
             output.write(outputstr.encode('utf-8'))
             output.close();
     except:
@@ -49,4 +73,4 @@ if __name__ == '__main__':
         print '%s does not exist...' % (filename)
         sys.exit()
 
-    excel2xml(filename)
+    excel2php(filename)
