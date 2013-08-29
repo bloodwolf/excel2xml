@@ -56,7 +56,7 @@ def excel2php(filename):
                 args = tuple([toString(x) for x in sh.row_values(i)])
                 outputstr = '"' + args[0] + '" => ' + line % args
                 output.write(outputstr.encode('utf-8') + "\n")
-            outputstr = ")\n?>"
+            outputstr = ");"
             output.write(outputstr.encode('utf-8'))
             output.close();
     except:
