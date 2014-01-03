@@ -16,6 +16,8 @@ def excel2json(filename):
     try:
         bk = xlrd.open_workbook(filename)
         for sh in bk.sheets():
+            if sh.nrows == 0:
+                continue
             content = {}
             jsonname = sh.name.encode('utf-8')
             print 'creating %s.json' % jsonname

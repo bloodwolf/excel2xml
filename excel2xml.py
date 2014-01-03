@@ -18,6 +18,8 @@ def excel2xml(filename):
     try:
         bk = xlrd.open_workbook(filename)
         for sh in bk.sheets():
+            if sh.nrows == 0:
+                continue
             print 'creating %s.xml' % sh.name
             output = open(sh.name + '.xml', 'w')
             firstline = sh.row_values(0)
@@ -42,6 +44,8 @@ def excel2php(filename):
     try:
         bk = xlrd.open_workbook(filename)
         for sh in bk.sheets():
+            if sh.nrows == 0:
+                continue
             print 'creating %s.php' % sh.name
             output = open(sh.name + '.php', 'w')
             output.write("<?php\n")
