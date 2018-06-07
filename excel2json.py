@@ -6,44 +6,37 @@ import sys
 import os
 import json
 
-
-def parseType(x):
-    if type(x) == float and int(x) == x:
-        return int(x)
-    return x
-
 def excel2json(filename):
-    try:
-        bk = xlrd.open_workbook(filename)
-        for sh in bk.sheets():
-            if sh.nrows == 0:
-                continue
-            content = {}
-            jsonname = sh.name.encode('utf-8')
-            print 'creating %s.json' % jsonname
-            output = open(jsonname + '.json', 'w')
-            firstline = sh.row_values(0)
-            for i in xrange(1, sh.nrows):
-                row = {}
-                line = sh.row_values(i)
-                line = [parseType(x) for x in line]
-                for j in xrange(len(firstline)):
-                    row[firstline[j]] = line[j]
-                content[line[0]] = row
-            output.write(json.dumps(content))
-            output.close();
-    except:
-        print 'file format error...'
-        sys.exit()
+    bk = xlrd.open_workbook(filename)
+    for sh in bk.sheets():
+        if sh.nrows == 0:
+            continue
+        content = []
+        jsonname = sh.name
+        print('creating %s.json' % jsonname)
+        output = open(jsonname + '.json', 'w')
+        firstline = sh.row_values(0)
+        for i in range(1, sh.nrows):
+            row = {}
+            line = sh.row_values(i)
+            for j in range(len(firstline)):
+                row[firstline[j]] = line[j]
+            content.append(row)
+        for crange in sh.merged_cells:
+            for i in range(crange[0], crange[1]-1):
+                for j in range(crange[2], crange[3]):
+                    content[i][firstline[j]] = content[crange[0]-1][firstline[crange[2]]]
+        output.write(json.dumps(content))
+        output.close();
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        print 'usage: %s excelfilename' % (sys.argv[0])
+        print('usage: %s excelfilename' % (sys.argv[0]))
         sys.exit()
 
     filename = sys.argv[1]
     if (not os.path.exists(filename)):
-        print '%s does not exist...' % (filename)
+        print('%s does not exist...' % (filename))
         sys.exit()
 
     excel2json(filename)
