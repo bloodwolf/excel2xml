@@ -20,7 +20,11 @@ def excel2json(filename):
             row = {}
             line = sh.row_values(i)
             for j in range(len(firstline)):
-                row[firstline[j]] = line[j]
+                value = line[j]
+                if sh.cell(i,j).ctype == 2:
+                    if int(value) == value:
+                        value = int(value)
+                row[firstline[j]] = value
             content.append(row)
         for crange in sh.merged_cells:
             for i in range(crange[0], crange[1]-1):
